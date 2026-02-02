@@ -1,0 +1,1508 @@
+{
+  "summary": {
+    "total": 99,
+    "user_errors": 7,
+    "non_user_errors": 92,
+    "uncertain": 0
+  },
+  "issues": [
+    {
+      "issue_number": 174119,
+      "title": "PR merge is delayed",
+      "url": "https://github.com/pytorch/pytorch/issues/174119",
+      "state": "open",
+      "labels": [
+        "ci: sev"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a CI/infrastructure issue caused by a GitHub runner incident affecting PyTorch's merge automation system. No user code changes needed - this requires fixes to PyTorch's CI infrastructure or waiting for GitHub to resolve their incident. The root cause is clearly identified as external (GitHub) and internal (trymerge job queue), not user error."
+    },
+    {
+      "issue_number": 174094,
+      "title": "The 'TypeError: Too few arguments for <class 'torch._inductor.codegen.common.CSE'>; actual 1, expected 2' Bug",
+      "url": "https://github.com/pytorch/pytorch/issues/174094",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "The error 'TypeError: Too few arguments for <class 'torch._inductor.codegen.common.CSE'>; actual 1, expected 2' is an internal PyTorch Inductor compiler error during torch.compile. This indicates a bug in PyTorch's code generation/compilation infrastructure (CSE - Common Subexpression Elimination), not incorrect user code. The user is using documented PyTorch APIs (@torch.compile, tensor operations) correctly. This requires a fix in PyTorch's inductor module."
+    },
+    {
+      "issue_number": 174089,
+      "title": "Significant numerical deviation and error amplification in nn.Conv2d between CUDA/FP32 and CPU/FP16",
+      "url": "https://github.com/pytorch/pytorch/issues/174089",
+      "state": "open",
+      "labels": [
+        "module: numerical-stability",
+        "module: nn",
+        "module: cpu",
+        "module: convolution",
+        "triaged",
+        "module: half",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This reports a legitimate numerical stability issue in PyTorch's CPU FP16 Conv2d implementation. The user demonstrates that a 7x7 convolution amplifies FP16 precision errors beyond acceptable thresholds (error nearly doubles from 1.8e-4 to 3.5e-4). This indicates a potential bug in PyTorch's CPU half-precision convolution kernels that may require optimization or algorithmic changes to improve numerical stability. The user is using the API correctly; the issue is with PyTorch's internal implementation."
+    },
+    {
+      "issue_number": 174088,
+      "title": "Gold doesn't work with GB200",
+      "url": "https://github.com/pytorch/pytorch/issues/174088",
+      "state": "open",
+      "labels": [
+        "module: build",
+        "module: cuda",
+        "triaged",
+        "module: arm",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a build system bug in PyTorch. The linker script at cmake/linker_script.ld contains syntax that is incompatible with the Gold linker on GB200 hardware. This requires fixing PyTorch's build configuration/linker script, not changes to user code. The issue mentions there may be an existing option to disable this, but the default build configuration is broken."
+    },
+    {
+      "issue_number": 174081,
+      "title": "[vllm] [release 2.10] V1 e2e + engine test_ngram_and_suffix_correctness[speculative_config1], test_draft_model_realistic_example",
+      "url": "https://github.com/pytorch/pytorch/issues/174081",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "module: vllm"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch/vLLM integration bug in release 2.10. The test failures are in PyTorch's CI for vLLM engine tests, and the comment from @atalman suggests a workaround that requires changing vLLM's internal version check condition. This is a compatibility/integration issue between PyTorch versions that requires code changes in either PyTorch or vLLM, not a user error."
+    },
+    {
+      "issue_number": 174078,
+      "title": "[inductor] torch.compile produces incorrect result when applying dropout on transposed contiguous tensor.",
+      "url": "https://github.com/pytorch/pytorch/issues/174078",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's inductor compiler. The issue demonstrates that torch.compile produces incorrect results compared to eager mode execution with the same random seed. Two contributors have confirmed it's a bug in the lowering logic - one pointing to dropout lowering not respecting input strides, another identifying incorrect stride inheritance in aten.clone lowering. This requires a PyTorch code fix, not a change in user code."
+    },
+    {
+      "issue_number": 174074,
+      "title": "torch.compile produces incorrect results with advanced indexing containing duplicate indices",
+      "url": "https://github.com/pytorch/pytorch/issues/174074",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's inductor backend. The issue shows that torch.compile with the inductor backend produces incorrect results for advanced indexing with duplicate indices (x[[0,0]]). The bug does not occur with eager or aot_eager backends, and the uncompiled model produces the correct output. This requires a fix in PyTorch's compiler/inductor code, not a change to user code."
+    },
+    {
+      "issue_number": 174073,
+      "title": "[inductor] A regression bug: argmax outputs wrong when working on transposed and mutated matrix",
+      "url": "https://github.com/pytorch/pytorch/issues/174073",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a regression bug in PyTorch's inductor compiler. The issue reports that a previously fixed bug (#163929) has reoccurred in torch 2.10.0. The compiled version produces incorrect results (argmin returns 4 instead of 1) when working with transposed and mutated tensors. A PyTorch contributor confirms this is a backend issue that needs to be fixed in the inductor code generator - the fix was only applied to CUDA backend and needs to be extended to CPU backend. This requires changes to PyTorch's code, not the user's code."
+    },
+    {
+      "issue_number": 174069,
+      "title": "[Inductor] argmax/max returns incorrect indices for boolean tensors on CUDA",
+      "url": "https://github.com/pytorch/pytorch/issues/174069",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor backend. The issue demonstrates that argmax returns incorrect indices (1 instead of 4) for boolean tensors when using torch.compile with Inductor on CUDA, while eager mode returns correct results. The same code works correctly for float and int tensors. This requires a PyTorch code fix in the Inductor backend, not a change to user code."
+    },
+    {
+      "issue_number": 174067,
+      "title": "torch.compile chooses autograd_function_apply pathway incompatible with torch.func transforms",
+      "url": "https://github.com/pytorch/pytorch/issues/174067",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: aotdispatch",
+        "module: compiled autograd"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's torch.compile implementation. The issue describes that torch.compile wraps autograd.Function subclasses using ApplyTemplate which lacks setup_context method, making it incompatible with torch.func transforms even when the original Function properly implements setup_context. The commenter provides a clear reproducer showing that the same code works without torch.compile but fails with it. This requires a fix in PyTorch's compilation/transformation logic, not changes to user code."
+    },
+    {
+      "issue_number": 174066,
+      "title": "How to prevent operator fusion at specific points in TorchInductor?",
+      "url": "https://github.com/pytorch/pytorch/issues/174066",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate technical question about TorchInductor's fusion control mechanisms, not a user error. The user is experiencing a performance issue with operator fusion and is asking about APIs or mechanisms to control fusion behavior for debugging purposes. A PyTorch team member has already provided a relevant config option (inductor choice config), confirming this is a valid inquiry about PyTorch's internal capabilities rather than incorrect usage of existing APIs."
+    },
+    {
+      "issue_number": 174063,
+      "title": "Current active mode \"ProxyTorchDispatchMode\" not registered Error while Exporting the Alpamayo model ( Qwen 3- VL )",
+      "url": "https://github.com/pytorch/pytorch/issues/174063",
+      "state": "open",
+      "labels": [
+        "needs reproduction",
+        "oncall: pt2",
+        "oncall: export",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch export bug. The error 'Current active mode ProxyTorchDispatchMode not registered' occurs during torch.export.export() when handling vmap operations in the attention mask creation. The user has already applied workarounds (patching transformers code, disabling torch._check) which indicates the issue is with PyTorch's export functionality not properly handling the vmap/functorch operations in the model, not with the user's usage. The fact that the error occurs deep in PyTorch's internal functorch/vmap implementation during export suggests a PyTorch code fix is needed to handle this pattern correctly."
+    },
+    {
+      "issue_number": 174050,
+      "title": "torch.compile produce inconsistent results when user overrides Python magic methods __class__",
+      "url": "https://github.com/pytorch/pytorch/issues/174050",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "module: correctness (silent)",
+        "oncall: pt2",
+        "module: dynamo",
+        "dynamo-triage-dec2025",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a correctness bug in torch.compile's handling of Python magic methods. The compiled code produces different results than eager mode when __class__ is overridden - isinstance() returns False instead of True and hasattr() returns False instead of True. This requires a fix in PyTorch's dynamo compiler to either correctly model __class__ reassignment or provide explicit diagnostics. No user code change can resolve this behavioral difference."
+    },
+    {
+      "issue_number": 174049,
+      "title": "[inductor] sdpa pattern matcher ignores scale",
+      "url": "https://github.com/pytorch/pytorch/issues/174049",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's inductor pattern matcher. The issue clearly states that torch.compile ignores the user-provided scale parameter and uses a default value instead, causing incorrect results. Even though the user's eager code has a wrong scale, the compiled version should respect whatever scale is provided. This requires a fix in PyTorch's pattern matching code, not a change in user code."
+    },
+    {
+      "issue_number": 174018,
+      "title": "Flex attention fails with mixed precision",
+      "url": "https://github.com/pytorch/pytorch/issues/174018",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: amp (automated mixed precision)",
+        "oncall: pt2",
+        "module: flex attention",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch. The issue explicitly demonstrates that adding a print statement (which should be a no-op) changes behavior from failing to working. This is a classic indicator of a PyTorch internal bug, likely related to dtype handling or graph tracing in the interaction between flex_attention, autocast, and torch.compile. The dtype mismatch error (float vs bfloat16) suggests improper dtype propagation within PyTorch's mixed precision system. No user code change would fix this - PyTorch needs to handle dtype consistency correctly regardless of debug statements."
+    },
+    {
+      "issue_number": 174016,
+      "title": "[Inductor] cumprod backward produces incorrect gradients when input contains zeros",
+      "url": "https://github.com/pytorch/pytorch/issues/174016",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This was a genuine bug in PyTorch's Inductor backend that produced incorrect gradients for cumprod backward when inputs contained zeros. The issue was caused by pattern_matcher optimization in Inductor and was specific to code changes in PR #170388. While the bug was eventually resolved (issue closed as it didn't exist on main branch), it required investigation into PyTorch internals and was not caused by incorrect user code or API misuse."
+    },
+    {
+      "issue_number": 173987,
+      "title": "Inductor produces different results from eager for aten.eq with BF16 tensor and FP32 scalar",
+      "url": "https://github.com/pytorch/pytorch/issues/173987",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor backend. The issue shows that torch.compile with the Inductor backend produces different numerical results compared to eager execution when comparing a BF16 tensor with a FP32 scalar using aten.eq. This is a correctness issue in PyTorch's compilation backend - the Inductor compiler is not handling scalar promotion/casting consistently with eager mode. The comment confirms this is an 'inductor issue' as the discrepancy exists between aot_eager and inductor but not between aot_eager and eager. This requires a PyTorch code fix to ensure Inductor handles type promotion correctly."
+    },
+    {
+      "issue_number": 173985,
+      "title": "[Inconsistency] aten.fractional_max_pool2d output significant outputs between torchInductor and eager",
+      "url": "https://github.com/pytorch/pytorch/issues/173985",
+      "state": "closed",
+      "labels": [
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch 2.6.x where the inductor backend produces incorrect outputs for fractional_max_pool2d compared to eager mode. The issue was fixed in later versions with specific code changes to PyTorch internals (_fractional_pooling_offsets function). The user is using PyTorch correctly; the code change needed is in PyTorch itself, not the user's code."
+    },
+    {
+      "issue_number": 173939,
+      "title": "[inductor] Inductor doesn't preserve pin_memory=True for some constructors.",
+      "url": "https://github.com/pytorch/pytorch/issues/173939",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor compiler. The issue shows that pin_memory=True is not being preserved for various tensor constructors when using torch.compile with the inductor backend, but works correctly with aot_eager backend. The investigation points to specific code locations in PyTorch (hardcoded pin_memory=False in joint_graph.py) that need to be fixed. This requires changes to PyTorch's internal code, not user code changes."
+    },
+    {
+      "issue_number": 173933,
+      "title": "Flex Attention Slower than vanilla torch for custom attention mask",
+      "url": "https://github.com/pytorch/pytorch/issues/173933",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "module: flex attention",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a performance regression issue where flex_attention is slower than vanilla PyTorch SDPA for custom attention masks. The user is correctly using the flex_attention API and encountering both performance issues and an error when trying to use kernel_options. This requires investigation into PyTorch's flex_attention implementation and potentially optimizations or bug fixes in the inductor backend."
+    },
+    {
+      "issue_number": 173927,
+      "title": "Numerical divergence in LSTM layer between CUDA and CPU with torch.compile",
+      "url": "https://github.com/pytorch/pytorch/issues/173927",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "oncall: pt2",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate bug report showing 200% relative difference between CUDA and CPU execution of the same LSTM layer with torch.compile. While minor numerical differences between devices are expected due to floating-point arithmetic, a 200% divergence is severe and indicates a potential bug in PyTorch's LSTM implementation, torch.compile optimization, or backend-specific numerics. The user correctly isolated the issue with identical inputs/weights and only varying execution environment. No code change is needed on the user's side - this requires investigation of PyTorch internals."
+    },
+    {
+      "issue_number": 173926,
+      "title": "compile errors when one of the outputs is a view of a requires_grad=True tensor, computed under no_grad",
+      "url": "https://github.com/pytorch/pytorch/issues/173926",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: aotdispatch",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's compilation system (AOTAutograd). The code works correctly in eager mode but fails during compilation. The issue description clearly identifies the problem in PyTorch's internal logic: AOTAutograd's filtering logic incorrectly tries to compute gradients against a tensor that has requires_grad=True but no grad_fn due to being created under no_grad context. This requires a fix to PyTorch's AOTAutograd component, not a change to user code."
+    },
+    {
+      "issue_number": 173924,
+      "title": "Variable 'named_children' is not defined in wrap_values()",
+      "url": "https://github.com/pytorch/pytorch/issues/173924",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "actionable",
+        "oncall: pt2",
+        "module: dynamo",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dynamo module introduced by PR #167342. The error 'cannot access free variable named_children' indicates a scoping issue in PyTorch's internal code (NNModuleVariable.call_method/wrap_values). A maintainer confirmed it's a PyTorch bug ('I can't believe that change made it through') and a fix PR #174047 was already submitted. This requires a PyTorch code change, not user code changes."
+    },
+    {
+      "issue_number": 173921,
+      "title": "[Inductor] Significant numerical divergence (4.7% relative error) in Conv2d on CPU with torch.compile",
+      "url": "https://github.com/pytorch/pytorch/issues/173921",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor compiler for CPU. The user is comparing CUDA eager execution vs CPU compiled execution and finding 4.7% relative error, which indicates numerical correctness issues in the compiled code path. This requires investigation and potential fixes to PyTorch's Inductor backend, not changes to user code. The user is correctly using the API and providing a minimal reproducer."
+    },
+    {
+      "issue_number": 173915,
+      "title": "Error in `torch.export` / `torch.compile` while tracing due to data-dependent control flow in `get_rope_index` (Qwen3-VL, Alpamayo)",
+      "url": "https://github.com/pytorch/pytorch/issues/173915",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo",
+        "module: graph breaks",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a limitation in the model code (Qwen3-VL's get_rope_index function) that contains data-dependent control flow incompatible with torch.export/torch.compile. While the PyTorch team suggested rewriting the model code as a workaround, the issue stems from a fundamental limitation in how torch.compile handles data-dependent operations. The user is asking if there are better solutions beyond restructuring their entire model, which is a reasonable question about PyTorch's capabilities. This isn't a user error in their usage of PyTorch APIs - it's a constraint/limitation of the torch.compile system that may benefit from better tooling, documentation, or potential enhancements to handle such patterns."
+    },
+    {
+      "issue_number": 173902,
+      "title": "[Inductor] Silent numerical corruption in Conv2d when INDUCTOR_SHAPE_PADDING=1",
+      "url": "https://github.com/pytorch/pytorch/issues/173902",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch Inductor. The user has provided a clear reproduction showing that torch.compile with INDUCTOR_SHAPE_PADDING=1 produces mathematically incorrect results (160% deviation) for a standard Conv2d operation. This is silent numerical corruption in generated Triton code that requires a PyTorch code fix, not a change to user code."
+    },
+    {
+      "issue_number": 173885,
+      "title": "[Inductor][CPU][float16] LayerNorm outputs NaN when input contains Inf",
+      "url": "https://github.com/pytorch/pytorch/issues/173885",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "module: nn",
+        "module: NaNs and Infs",
+        "module: edge cases",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor backend. The issue shows inconsistent behavior between CUDA and CPU backends when handling Inf values in float16 LayerNorm - CPU Inductor produces NaN while CUDA and eager mode handle it better. The commenter correctly identifies the root cause as a numerical stability issue in Inductor's variance calculation (naive E[x^2] - (E[x])^2 formulation) that requires a code fix using Welford's algorithm. This is a legitimate PyTorch bug requiring internal code changes, not a user error."
+    },
+    {
+      "issue_number": 173871,
+      "title": "[release 2.11] [triton] test_aot_inductor.py::AOTInductorTestABICompatibleGpu::test_simple_multi_arch_embed_kernel_binary_False_cuda",
+      "url": "https://github.com/pytorch/pytorch/issues/173871",
+      "state": "open",
+      "labels": [
+        "oncall: pt2",
+        "oncall: export",
+        "module: aotinductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a test failure in PyTorch's internal test suite (test_aot_inductor.py) that occurred after a Triton update. The issue is failing across multiple CI configurations (CUDA, ROCm) and appears to be related to AOTInductor's multi-arch kernel embedding functionality. This is clearly a PyTorch internal bug that requires code changes to fix, not a user error."
+    },
+    {
+      "issue_number": 173823,
+      "title": "[uv] [python<3.12] [cpu] smoke_test_compile failing with ModuleNotFoundError: No module named 'setuptools'",
+      "url": "https://github.com/pytorch/pytorch/issues/173823",
+      "state": "open",
+      "labels": [
+        "module: binaries",
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dependency specification. PyTorch's metadata incorrectly restricts setuptools to python>=3.12, but torch.compile/inductor actually requires setuptools on Python 3.10/3.11 as well. This requires fixing PyTorch's packaging metadata, not user code changes."
+    },
+    {
+      "issue_number": 173816,
+      "title": "make should_preserve_node_meta and relevant variable TLS",
+      "url": "https://github.com/pytorch/pytorch/issues/173816",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: fx",
+        "oncall: pt2",
+        "module: dynamo",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request to make `should_preserve_node_meta` and related variables thread-local storage (TLS). It references a PR discussion and links to another issue about making configs TLS. This requires changes to PyTorch's internal implementation, not user code changes."
+    },
+    {
+      "issue_number": 173800,
+      "title": "[release 2.11] [triton]  test_aot_inductor_package.py::TestAOTInductorPackageCpp_cuda::test_compile_with_exporter",
+      "url": "https://github.com/pytorch/pytorch/issues/173800",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "upstream triton"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a test failure in PyTorch's own test suite (test_aot_inductor_package.py) that occurred after a Triton dependency update. It's labeled as 'triaged', 'oncall: pt2', 'module: inductor', and 'upstream triton', indicating it's a known issue with PyTorch's inductor/triton integration that requires PyTorch code changes or coordination with upstream Triton. This is clearly a bug in PyTorch itself, not a user error."
+    },
+    {
+      "issue_number": 173797,
+      "title": "[release 2.11] [triton]  test_cudagraph_trees_expandable_segments.py::CudaGraphTreeTests::test_graph_partition_user_defined_triton_kernel_reuse",
+      "url": "https://github.com/pytorch/pytorch/issues/173797",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "upstream triton"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a test failure in PyTorch's own test suite (test_cudagraph_trees_expandable_segments.py) following a Triton dependency update. The issue shows assertion failures with numerical mismatches in the test output, indicating a potential bug introduced by the Triton update that requires investigation and potentially code changes in PyTorch or its integration with Triton. This is not a user error - it's an internal PyTorch testing/integration issue."
+    },
+    {
+      "issue_number": 173795,
+      "title": "[release 2.11] [triton] test_triton_kernels.py::MutationTests::test_while_loop",
+      "url": "https://github.com/pytorch/pytorch/issues/173795",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "upstream triton",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a test failure in PyTorch's own test suite (test_triton_kernels.py) that occurs after a Triton dependency update. The error is in PyTorch's internal code (triton_kernel_wrap.py) when generating TTIR, not in user code. This requires a PyTorch code fix to handle the new Triton version correctly."
+    },
+    {
+      "issue_number": 173793,
+      "title": "Numerical stability discrepancy in torch.compile: LayerNorm produces NaN for large inputs (~1e37) while Eager mode is stable",
+      "url": "https://github.com/pytorch/pytorch/issues/173793",
+      "state": "open",
+      "labels": [
+        "triage review",
+        "module: NaNs and Infs",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's torch.compile/Inductor implementation. The issue demonstrates a clear behavioral difference between eager mode and compiled mode for valid inputs within float32 range (~1e37). Eager mode handles LayerNorm numerically correctly while Inductor produces NaNs due to numerical instability in its fused kernel implementation (likely computing variance as E[x\u00b2] - (E[x])\u00b2 which causes INF - INF \u2192 NaN). This requires either a code fix in the Inductor kernel to use more stable algorithms (like Welford's method) or at minimum documentation of the limitation. No user code change can resolve this divergence."
+    },
+    {
+      "issue_number": 173781,
+      "title": "[Inductor] Optimize unnecessary cloning for dtype views",
+      "url": "https://github.com/pytorch/pytorch/issues/173781",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request for a missing optimization in PyTorch Inductor. The user identifies that the compiler unnecessarily clones tensors when using dtype views with mutating operations because it cannot detect the aliasing relationship. This requires a code change in PyTorch's compiler infrastructure to optimize away unnecessary clones, not a change to user code. The issue explicitly states it's a missing optimization with real workload impact and has a linked PR proposal to fix it."
+    },
+    {
+      "issue_number": 173765,
+      "title": "TorchInductor out of shared memory while compiling backwards pass",
+      "url": "https://github.com/pytorch/pytorch/issues/173765",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate PyTorch Inductor bug. The generated Triton kernel requires 213032 bytes of shared memory, exceeding the A100's hardware limit of 166912 bytes. This is not a user error - the user's code should be compilable, but TorchInductor's kernel generation is creating an inefficient kernel that doesn't fit within hardware constraints. The fix requires changes to PyTorch's Inductor compiler to generate more memory-efficient kernels (e.g., reducing block sizes, better tiling strategies, or kernel decomposition)."
+    },
+    {
+      "issue_number": 173759,
+      "title": "[RFC] Support dynamic registration of components/artifacts in TORCH_LOGS to support third-party backends",
+      "url": "https://github.com/pytorch/pytorch/issues/173759",
+      "state": "open",
+      "labels": [
+        "module: logging",
+        "triaged",
+        "topic: not user facing",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is an RFC (Request for Comments) proposing a feature enhancement to PyTorch's logging system to support dynamic registration of third-party backend components. It identifies a design limitation in PyTorch where TORCH_LOGS validation happens too early for out-of-tree backends to register themselves, and proposes solutions with code patches. This requires PyTorch code changes to fix, making it clearly not a user error."
+    },
+    {
+      "issue_number": 173706,
+      "title": "Regression from 2.9.1 to 2.10.0 for AOTInductor with error `AttributeError: module 'torch._inductor' has no attribute 'codecache'`",
+      "url": "https://github.com/pytorch/pytorch/issues/173706",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triage review",
+        "module: regression",
+        "oncall: pt2",
+        "oncall: export",
+        "module: aotinductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a regression bug in PyTorch 2.10.0. The code worked in 2.9.1 but broke in 2.10.0 due to an incorrect import statement in PyTorch's own code (torch/export/pt2_archive/_package.py). The issue requires a code fix in PyTorch itself, not a change to user code. A fix was already submitted in PR #173751."
+    },
+    {
+      "issue_number": 173702,
+      "title": "[RFC] Release 2.11 Triton update",
+      "url": "https://github.com/pytorch/pytorch/issues/173702",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "upstream triton",
+        "bot-triaged"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is an RFC (Request for Comments) from PyTorch maintainers discussing whether to update the Triton dependency for PyTorch 2.11 release. It's an internal development discussion about upstream dependency management, not a user error. No user code changes would resolve this - it requires PyTorch team decisions and potential code changes to integrate a new Triton version."
+    },
+    {
+      "issue_number": 173679,
+      "title": "Triton cache issues: `Stale file handle`, `Device or resource busy: '/root/.triton/cache/.../cuda_utils.cpython-310-x86_64-linux-gnu.so' -> '/root/.triton/cache/.../cuda_utils.cpython-310-x86_64-linux-gnu.so'`",
+      "url": "https://github.com/pytorch/pytorch/issues/173679",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "needs reproduction",
+        "oncall: pt2",
+        "module: inductor",
+        "upstream triton"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a Triton cache file system issue occurring during PyTorch's inductor compilation, causing 'Stale file handle' and 'Device or resource busy' errors. This appears to be a race condition or file system issue in PyTorch's Triton caching mechanism when running on multiple ranks, not a user code error. The issue occurs in PyTorch's internal compilation stack and would require fixes to PyTorch/Triton's cache handling logic."
+    },
+    {
+      "issue_number": 173659,
+      "title": "DataDependentOutputException: aten.equal.default when exporting torch.quantile",
+      "url": "https://github.com/pytorch/pytorch/issues/173659",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: dynamic shapes",
+        "oncall: export"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's export functionality. The DataDependentOutputException indicates that torch.quantile fails during torch.export due to issues with fake mode/symbolic tracing in PyTorch's export infrastructure. The user is correctly using the torch.quantile API, and the operation works in eager mode. The issue is labeled 'oncall: export', 'oncall: pt2', and 'module: dynamic shapes', confirming it requires PyTorch code changes to support quantile in export. The comment mentions 'framework code that's unsafe for fake mode', further indicating this is an internal PyTorch bug, not user error."
+    },
+    {
+      "issue_number": 173642,
+      "title": "[Feature Request][torch.compile] Improve UX when autotuning repeated layer",
+      "url": "https://github.com/pytorch/pytorch/issues/173642",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "module: dynamo",
+        "module: compile ux"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request to improve PyTorch's torch.compile autotuning behavior when dealing with repeated layers. The issue describes how compiling at the Decoder level triggers autotuning 24 times (once per layer) versus compiling at the DecoderLayer level which reuses compilation. This requires changes to PyTorch's compilation/inductor internals to automatically detect and optimize repeated layer patterns, not changes to user code. The cc'd developer discussion confirms this is a known improvement area for regional compilation UX."
+    },
+    {
+      "issue_number": 173626,
+      "title": "[CPU][inductor] torch.compile regression",
+      "url": "https://github.com/pytorch/pytorch/issues/173626",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor",
+        "oncall: cpu inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a regression in PyTorch's torch.compile/inductor functionality. The issue reporter has identified a specific PR (#165885) that caused the regression. The error occurs in PyTorch's internal compilation stack (_compile_fx_inner, InductorError), not from user misuse. This requires a PyTorch code fix to resolve the regression."
+    },
+    {
+      "issue_number": 173621,
+      "title": "Feasibility of Persistent Caching for Dynamo Frontend",
+      "url": "https://github.com/pytorch/pytorch/issues/173621",
+      "state": "open",
+      "labels": [
+        "feature",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo",
+        "module: compile ux"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request for persistent caching in Dynamo frontend, not a user error. The issue describes a performance bottleneck in PyTorch's compilation pipeline and asks about the feasibility of implementing frontend caching. Comments indicate this is a known limitation with active discussion among PyTorch developers about potential solutions ('precompile' workstream). This requires changes to PyTorch internals, not changes to user code."
+    },
+    {
+      "issue_number": 173578,
+      "title": "FunctionIdSet should store weakrefs instead of object ids.",
+      "url": "https://github.com/pytorch/pytorch/issues/173578",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "topic: improvements",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is an internal PyTorch implementation improvement request. It describes a technical debt issue in torch._dynamo where FunctionIdSet stores object IDs instead of weakrefs, requiring workarounds. This requires changes to PyTorch's internal code, not user code changes."
+    },
+    {
+      "issue_number": 173522,
+      "title": "dynamo_graph_capture doesn't work with default kwargs",
+      "url": "https://github.com/pytorch/pytorch/issues/173522",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dynamo_graph_capture_for_export function. The issue reports that it fails to handle keyword-only arguments with default values correctly, raising TypeError about missing required argument when the argument actually has a default value (None). While one commenter couldn't reproduce it, the error indicates PyTorch's graph capture mechanism is not properly detecting/handling default kwargs, which would require a fix in PyTorch's dynamo code."
+    },
+    {
+      "issue_number": 173478,
+      "title": "[Inconsitency] Numerical Discrepancy Between Eager and Inductor Backends for atan + special_psi Composition",
+      "url": "https://github.com/pytorch/pytorch/issues/173478",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate bug in PyTorch. The issue reports numerical discrepancies between eager and inductor backends when composing atan and special_psi operations. The comments from PyTorch maintainers confirm this is due to different implementation choices - triton's libdevice.atan uses a different approximation algorithm than eager cuda atan(), causing ULP differences that get amplified by digamma's steep derivative. This requires PyTorch code changes (potentially changing eager cuda to use nv libdevice) to fix the inconsistency between backends, not user code changes."
+    },
+    {
+      "issue_number": 173452,
+      "title": "Feature request: Support forward hooks with torch.compile fullgraph=True for capturing intermediate activations",
+      "url": "https://github.com/pytorch/pytorch/issues/173452",
+      "state": "open",
+      "labels": [
+        "feature",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate feature request for PyTorch to support forward hooks with fullgraph=True compilation. The user has identified a real limitation in torch.compile's architecture where hooks with side effects are compiled out when fullgraph=True is used. They've tried multiple workarounds and are requesting PyTorch code changes to enable this use case. This requires changes to PyTorch's compiler infrastructure, not changes to the user's code."
+    },
+    {
+      "issue_number": 173384,
+      "title": "[dynamo] RecursionError on self-referential objects",
+      "url": "https://github.com/pytorch/pytorch/issues/173384",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dynamo compiler. While the user is creating self-referential data structures, PyTorch should handle these gracefully rather than hitting infinite recursion in its internal code (lazy.py and constant.py). The RecursionError is occurring in torch._dynamo internals, not user code. This requires a fix in PyTorch's compilation logic to detect and handle circular references properly."
+    },
+    {
+      "issue_number": 173381,
+      "title": "TorchInductor BF16 CPU compilation fails on Arm Neoverse V3",
+      "url": "https://github.com/pytorch/pytorch/issues/173381",
+      "state": "open",
+      "labels": [
+        "needs reproduction",
+        "module: regression",
+        "module: arm",
+        "oncall: pt2",
+        "oncall: cpu inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's TorchInductor. The issue is that on Arm Neoverse V3, TorchInductor only generates -march=native instead of explicit ISA flags like -march=armv8-a+sve+bf16 (which works on V2). This causes compilation failures with GCC 12.4. The comments confirm it's a PyTorch issue related to CPU ISA detection/flag selection in Inductor, not a user code problem. PyTorch needs to fix its compiler flag generation logic for this hardware."
+    },
+    {
+      "issue_number": 173369,
+      "title": "Exporting ONNX model with captum heatmaps generation",
+      "url": "https://github.com/pytorch/pytorch/issues/173369",
+      "state": "open",
+      "labels": [
+        "module: onnx",
+        "triaged",
+        "oncall: pt2",
+        "oncall: export"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch export functionality issue, not user error. The user is experiencing two problems: (1) with dynamo=False, the export completes but produces constant heatmaps instead of dynamic ones, suggesting a tracing issue in PyTorch's ONNX export, and (2) with dynamo=True, the export fails with an internal error in torch.export._trace. Both issues require investigation/fixes in PyTorch's export system, particularly around handling complex models with gradient-based attribution methods like Captum's IntegratedGradients. The TracerWarnings about constants indicate PyTorch's export limitations, not incorrect user code."
+    },
+    {
+      "issue_number": 173313,
+      "title": "Bad perf for torch.compile for merge_attention with transposed inputs",
+      "url": "https://github.com/pytorch/pytorch/issues/173313",
+      "state": "open",
+      "labels": [
+        "high priority",
+        "triage review",
+        "triaged",
+        "oncall: pt2",
+        "module: aotdispatch",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a performance bug in PyTorch's torch.compile system. The issue shows that torch.compile produces significantly slower code (6.38x slower backward pass) compared to a reference implementation. While a workaround exists (setting torch._functorch.config.guess_tangent_strides_as_outputs = True), this requires changing PyTorch internals, not user code. The root cause is that torch.compile is inserting unnecessary .contiguous() conversions that hurt performance. This is a torch.compile codegen/optimization issue that needs to be fixed in PyTorch itself."
+    },
+    {
+      "issue_number": 173307,
+      "title": "[Inconsistency] Numerical divergence between eager and inductor for infinitely_differentiable_gelu_backward in BF16",
+      "url": "https://github.com/pytorch/pytorch/issues/173307",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate bug in PyTorch's Inductor backend. The issue reports numerical divergence between eager and compiled modes for the same operator with BF16 dtype, which indicates a backend implementation issue. The user correctly identified that FP32 works consistently while BF16 does not, suggesting different intermediate precision handling or fusion behavior in Inductor. This requires a PyTorch code fix, not changes to user code. The triaged label and developer discussion confirm this is a real backend issue."
+    },
+    {
+      "issue_number": 173255,
+      "title": "Torch.compile is decreasing training speed instead increasing it",
+      "url": "https://github.com/pytorch/pytorch/issues/173255",
+      "state": "open",
+      "labels": [
+        "module: performance",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "User experiencing performance degradation with torch.compile, which is a usage/configuration issue rather than a PyTorch bug. The maintainer's response directs them to documentation about identifying graph breaks and recompiles - common issues when using torch.compile that require the user to modify their code. No PyTorch code change is needed; the user needs to debug their model/training loop for torch.compile compatibility."
+    },
+    {
+      "issue_number": 172712,
+      "title": "torch.compile fails with NotImplementedError for MKLDNN layout tensor: 'aten::addmm.out' not available for MkldnnCPU backend",
+      "url": "https://github.com/pytorch/pytorch/issues/172712",
+      "state": "open",
+      "labels": [
+        "oncall: pt2",
+        "oncall: cpu inductor",
+        "topic: fuzzer"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate PyTorch bug, not a user error. The issue reports that torch.compile does not support MKLDNN layout tensors due to missing backend implementation (aten::addmm.out not available for MkldnnCPU). While a workaround exists (converting to dense), the user has valid expectations that torch.compile should handle MKLDNN tensors since eager mode does. This requires either: (1) implementing the missing backend operator, (2) auto-converting MKLDNN tensors in the compiler, or (3) raising a clear error at compile-time. The issue is tracked with 'oncall: pt2' and 'oncall: cpu inductor' labels, indicating it's recognized as a PyTorch internal issue requiring code changes."
+    },
+    {
+      "issue_number": 172711,
+      "title": "torch.compile produces wrong output channels for mkldnn._convolution_transpose_pointwise (FakeTensor shape inference bug) ",
+      "url": "https://github.com/pytorch/pytorch/issues/172711",
+      "state": "open",
+      "labels": [
+        "module: correctness (silent)",
+        "oncall: pt2",
+        "oncall: cpu inductor",
+        "topic: fuzzer"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a genuine bug in PyTorch's torch.compile implementation. The FakeTensor/meta kernel for mkldnn._convolution_transpose_pointwise incorrectly computes output shape using weight.shape[0] instead of weight.shape[1], causing silent correctness issues. A PR (#172900) was created to fix this bug in PyTorch's codebase. This requires changes to PyTorch internals, not user code."
+    },
+    {
+      "issue_number": 172184,
+      "title": "\ud83d\udc1b torch.compile silently bypasses device mismatch checks with torch.randperm() in index_add operations",
+      "url": "https://github.com/pytorch/pytorch/issues/172184",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: meta tensors",
+        "oncall: pt2",
+        "topic: fuzzer"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch bug, not user error. While the user's code has a device mismatch (creating CPU tensor with randperm and using it with CUDA tensors), the issue is that torch.compile behaves inconsistently with eager mode. Eager mode correctly raises an error for this invalid operation, but torch.compile silently bypasses the safety check. PyTorch's compiler should maintain the same error-checking behavior as eager mode. The inconsistency between execution modes is a compiler bug that needs fixing in PyTorch's internals."
+    },
+    {
+      "issue_number": 172183,
+      "title": "\ud83d\udc1b torch.compile silently bypasses dtype mismatch checks in SFDP attention patterns",
+      "url": "https://github.com/pytorch/pytorch/issues/172183",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: meta tensors",
+        "oncall: pt2",
+        "topic: fuzzer"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate bug in PyTorch. The issue demonstrates a semantic inconsistency between eager and compiled modes - eager mode correctly raises a RuntimeError for dtype mismatch (float16 @ float32), while torch.compile silently bypasses this check. This requires a fix in PyTorch's compiler (Inductor/Dynamo) to ensure consistent behavior and proper error handling. The user is not misusing the API; they've identified a real discrepancy in PyTorch's behavior that needs to be fixed, as acknowledged by ezyang's comment about 'making sure Dynamo gives good errors when the eager code wouldn't have run'."
+    },
+    {
+      "issue_number": 171672,
+      "title": "torch.compile max-autotune and reduce-overhead much slower than default due to repeated CUDA graph instantiation",
+      "url": "https://github.com/pytorch/pytorch/issues/171672",
+      "state": "open",
+      "labels": [
+        "needs reproduction",
+        "triaged",
+        "module: cuda graphs",
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a performance bug in PyTorch's CUDA graphs implementation with torch.compile. The issue shows CUDA graphs are being unnecessarily recreated every iteration when using max-autotune/reduce-overhead modes, causing significant slowdown. The user reports fixed input shapes, no in-place parameter mutations, and standard training loop - yet graphs are recaptured each iteration (confirmed by TORCH_LOGS showing incrementing graph IDs). The fact that removing loss.backward() fixes the issue points to an interaction bug between CUDA graphs and autograd/backward pass. This requires PyTorch code changes to fix the recapture behavior, not user code changes."
+    },
+    {
+      "issue_number": 171509,
+      "title": "DISABLED test_wrap_triton_handled_during_tracing (__main__.FunctionTests)",
+      "url": "https://github.com/pytorch/pytorch/issues/171509",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "skipped",
+        "oncall: pt2",
+        "module: xpu"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a CI infrastructure issue about a disabled test in PyTorch's test suite that was failing on the XPU platform. It requires investigation and potential fixes to PyTorch code or test infrastructure, not changes to user code. The issue is about PyTorch's internal testing, not user-facing API usage."
+    },
+    {
+      "issue_number": 171508,
+      "title": "DISABLED test_wrap_triton_handled_during_tracing_dynamic_shapes (__main__.DynamicShapesFunctionTests)",
+      "url": "https://github.com/pytorch/pytorch/issues/171508",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "skipped",
+        "oncall: pt2",
+        "module: xpu"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is an issue about a failing test in PyTorch's CI system on XPU platform that needed to be disabled. It's an internal PyTorch development issue requiring investigation and fixes to the test or XPU implementation, not a user misusing PyTorch APIs. The issue is about PyTorch's test infrastructure and platform support."
+    },
+    {
+      "issue_number": 171191,
+      "title": "torch.compile (Inductor) ignores float64\u2192float32 dtype promotion in SDPA, diverging from eager semantics",
+      "url": "https://github.com/pytorch/pytorch/issues/171191",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "topic: fuzzer",
+        "module: sdpa"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a semantic divergence bug between eager and compiled modes in PyTorch. The user correctly identified that torch.compile (Inductor) handles float64\u2192float32 dtype promotion differently than eager mode - eager raises an error while compiled succeeds. This inconsistency requires a PyTorch code fix to ensure both modes behave the same way. The user is not misusing the API; they're reporting a legitimate bug in the compiler's dtype handling."
+    },
+    {
+      "issue_number": 171190,
+      "title": "torch.compile (Inductor) silently ignores explicit dtype casts in SDPA, diverging from eager semantics",
+      "url": "https://github.com/pytorch/pytorch/issues/171190",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "topic: fuzzer",
+        "module: sdpa"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's torch.compile/Inductor backend. The issue describes a semantic inconsistency where compiled code silently ignores explicit dtype casts and produces different behavior than eager mode (eager raises an error, compiled succeeds). This violates torch.compile's semantic equivalence guarantee and requires a fix in PyTorch internals. The user has already opened a PR #173459 to fix it, confirming this is a legitimate PyTorch bug, not a user error."
+    },
+    {
+      "issue_number": 171093,
+      "title": "torch.compile fails with \"Output size is too small\" for ConvTranspose2d producing zero-size output",
+      "url": "https://github.com/pytorch/pytorch/issues/171093",
+      "state": "closed",
+      "labels": [
+        "oncall: pt2",
+        "module: fakeTensor",
+        "module: dynamo",
+        "topic: fuzzer",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's torch.compile implementation. The issue shows that eager mode correctly handles zero-size tensor outputs from ConvTranspose2d, but torch.compile fails with 'Output size is too small' error. This is an inconsistency between eager and compiled modes where PyTorch's FakeTensor validation is incorrectly rejecting valid zero-size tensors. The issue requires a fix in PyTorch's dynamo/FakeTensor code, not a change in user code. The user is using the API correctly - zero-size tensors are valid in PyTorch."
+    },
+    {
+      "issue_number": 170831,
+      "title": "Mixed dtype support for FlexAttention (low precision K/V)",
+      "url": "https://github.com/pytorch/pytorch/issues/170831",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: flex attention"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request for adding mixed dtype support (fp8 K/V with higher precision Q) to FlexAttention in PyTorch. It required PyTorch code changes to implement, as evidenced by the PRs that added this functionality to the codebase. This is not a user error but rather a legitimate feature addition that needed to be implemented in PyTorch itself."
+    },
+    {
+      "issue_number": 170429,
+      "title": "torch.compile fails with AttributeError during guard generation when mixing forward_pre_hooks (Function + Method)",
+      "url": "https://github.com/pytorch/pytorch/issues/170429",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's torch.compile/Dynamo guard generation logic. When mixing function and method hooks on nn.Module, Dynamo incorrectly attempts to access __func__ attribute on plain function hooks (which don't have this attribute). The issue requires a PyTorch code fix to properly handle mixed hook types during guard generation. The user provided valid reproduction code demonstrating the bug, and even attempted a patch but encountered complications due to previous changes in the codebase."
+    },
+    {
+      "issue_number": 169082,
+      "title": "Reduce Overhead and Max Autotune NaN",
+      "url": "https://github.com/pytorch/pytorch/issues/169082",
+      "state": "open",
+      "labels": [
+        "needs reproduction",
+        "triaged",
+        "module: correctness (silent)",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch bug. The same code works fine without torch.compile but produces NaN values specifically when using 'max-autotune' or 'reduce-overhead' modes with bfloat16. The user demonstrates that: (1) without compile it works, (2) with GradScaler it works, and (3) the issue only appears with specific compile modes. This indicates a correctness bug in PyTorch's inductor/compiler that requires a code fix, not a change in user code. The labels 'module: correctness (silent)' and 'module: inductor' confirm this is a known PyTorch internal issue."
+    },
+    {
+      "issue_number": 169011,
+      "title": "torch.compile Assertion failure in efficient_conv_bn_eval_graph_transform_inlined when compiling FX graph with F.batch_norm (len(args)==3)",
+      "url": "https://github.com/pytorch/pytorch/issues/169011",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's Inductor compiler pass. The efficient_conv_bn_eval_graph_transform_inlined pass incorrectly assumes batch_norm always has 8 arguments and asserts len(bn_node.args) == 8, but the FX graph correctly contains the valid 3-argument form of F.batch_norm (input, running_mean, running_var). The issue reporter demonstrates this works with aot_eager backend but crashes with inductor when efficient_conv_bn_eval_fx_passes is enabled. This requires fixing the assertion/validation logic in the Inductor pass to handle the valid 3-argument form."
+    },
+    {
+      "issue_number": 168973,
+      "title": "DebugMode sample code is unrealistic for real world training use case",
+      "url": "https://github.com/pytorch/pytorch/issues/168973",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request/limitation in PyTorch's DebugMode API. The user is pointing out that the sample code is unrealistic for real-world use cases where different model configs cannot run in the same process. This would require changes to PyTorch's DebugMode implementation or documentation to support cross-process debugging scenarios, not changes to the user's code."
+    },
+    {
+      "issue_number": 167893,
+      "title": "Do split reduction even if there are only broadcasted read",
+      "url": "https://github.com/pytorch/pytorch/issues/167893",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug report about PyTorch Inductor's reduction splitting logic. The issue describes a limitation in the compiler's optimization where reductions with broadcasted reads are not being split properly, causing a test to fail. This requires a code change in PyTorch's inductor module to fix the `Reduction.num_split` logic to handle broadcasted reads. This is clearly an internal PyTorch optimization issue, not a user error."
+    },
+    {
+      "issue_number": 167142,
+      "title": "[dynamo, BE] get rid of IncorrectUsage exception",
+      "url": "https://github.com/pytorch/pytorch/issues/167142",
+      "state": "open",
+      "labels": [
+        "good first issue",
+        "triaged",
+        "better-engineering",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a code cleanup/refactoring task for PyTorch developers to improve the codebase by removing an unused exception type and replacing it with standard error handling mechanisms. It requires changes to PyTorch's internal code, not user code changes."
+    },
+    {
+      "issue_number": 166926,
+      "title": "Full AC(compile(model)), Dynamo cache hit tiebreak causes AC to crash",
+      "url": "https://github.com/pytorch/pytorch/issues/166926",
+      "state": "open",
+      "labels": [
+        "module: activation checkpointing",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's activation checkpointing (AC) and dynamo compilation interaction. The issue describes a crash in torch.utils.checkpoint when using full AC with compile() on models with repeated structures. The error 'trying to save more tensors during recomputation than during the original forward pass' indicates PyTorch internals are incorrectly handling cache hits/dispatch between forward and backward passes. The comments discuss internal implementation solutions (recording cache entries, eval_frame dispatch changes), confirming this requires PyTorch code fixes, not user code changes."
+    },
+    {
+      "issue_number": 165421,
+      "title": "[torch.compile][fullgraph][dynamic shapes] aten.masked_select.default rejected as \u201cDynamic shape operator\u201d (eager OK)",
+      "url": "https://github.com/pytorch/pytorch/issues/165421",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamic shapes"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "This is expected behavior as confirmed by the maintainer comment. The user needs to change their code by setting torch._dynamo.config.capture_dynamic_output_shape_ops = True to handle dynamic shape operators. No PyTorch code fix is needed - the workaround is already available and documented in the error message."
+    },
+    {
+      "issue_number": 165417,
+      "title": "[torch.compile][fullgraph][dynamic shapes] `torch.unique` (`aten._unique2.default`) rejected as \u201cDynamic shape operator\u201d in fullgraph mode (eager OK)",
+      "url": "https://github.com/pytorch/pytorch/issues/165417",
+      "state": "closed",
+      "labels": [
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch limitation/bug, not user error. The user is using torch.unique correctly - it works in eager mode but fails with torch.compile(fullgraph=True). The error message itself suggests a workaround (enabling capture_dynamic_output_shape_ops), indicating this is a known limitation in PyTorch's compiler that needs to be fixed. The issue was closed as a duplicate of another PyTorch issue, confirming it's a legitimate PyTorch problem requiring internal fixes, not incorrect user code."
+    },
+    {
+      "issue_number": 165409,
+      "title": "[torch.compile][fullgraph][functionalization] In-place op on overlapped view from unfold fails: \u201ctensor being mutated has internal overlap\u201d (eager OK)",
+      "url": "https://github.com/pytorch/pytorch/issues/165409",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "has workaround",
+        "module: functionalization",
+        "oncall: pt2",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "The issue involves performing an in-place mutation on a tensor with overlapping memory, which has undefined behavior. PyTorch developers confirm this is not supported and provide clear workarounds (remove in-place op, clone tensor, or reorder operations). No PyTorch code change is needed - the user needs to modify their code to avoid the undefined behavior pattern. The compile error is actually catching a problematic pattern that happens to work (with undefined semantics) in eager mode."
+    },
+    {
+      "issue_number": 165408,
+      "title": "[torch.compile][fullgraph] Dynamo rejects comparing `data_ptr()` results (`Unsupported: Builtin operator.* comparison with constant self`)",
+      "url": "https://github.com/pytorch/pytorch/issues/165408",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo",
+        "dynamo-triage-dec2025"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch bug, not a user error. The user is correctly using the `data_ptr()` API to compare tensor metadata, which works fine in eager mode. However, torch.compile with fullgraph=True fails to handle this comparison in Dynamo, throwing an 'Unsupported' error. This requires a fix in PyTorch's Dynamo compiler to either support data_ptr() comparisons or provide a better workaround. The issue is in PyTorch's compilation infrastructure, not in the user's code."
+    },
+    {
+      "issue_number": 162859,
+      "title": "[RFC] support symmetric memory in torch.compile",
+      "url": "https://github.com/pytorch/pytorch/issues/162859",
+      "state": "open",
+      "labels": [
+        "oncall: distributed",
+        "triaged",
+        "oncall: pt2",
+        "module: inductor",
+        "vllm-compile",
+        "module: vllm",
+        "module: symm_mem"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is an RFC (Request for Comments) proposing a new feature for torch.compile to support symmetric memory allocation for collective operators. It's a feature request for PyTorch internals, not a user error. The discussion involves PyTorch core developers designing API changes and implementation strategies for Inductor and the compiler stack."
+    },
+    {
+      "issue_number": 162817,
+      "title": "[FakeTensor][ATen] Inconsistent behaviours of view_copy in Eager and FakeTensor mode",
+      "url": "https://github.com/pytorch/pytorch/issues/162817",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: fakeTensor",
+        "module: dynamo",
+        "module: pt2-dispatcher",
+        "arm priority"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's FakeTensor implementation. The issue describes an inconsistency between eager mode and FakeTensor mode for the same operation (aten.view_copy on a broadcasted tensor). Eager mode succeeds while FakeTensor mode raises a ValueError. The user has already proposed a fix PR #162809 to align FakeTensor's meta implementation with eager behavior. This requires a PyTorch code change to resolve the inconsistency in the FakeTensor meta kernel."
+    },
+    {
+      "issue_number": 162727,
+      "title": "Torch Compile Fails with torchdiffeq Due to Enum Handling in ODE Solvers",
+      "url": "https://github.com/pytorch/pytorch/issues/162727",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a limitation in PyTorch's torch.compile/TorchDynamo system that fails to handle enum types from third-party libraries like torchdiffeq. The user is using both PyTorch and torchdiffeq APIs correctly. Fixing this requires PyTorch code changes to either support enum compilation or provide better error handling, not changes to user code."
+    },
+    {
+      "issue_number": 162228,
+      "title": "Backpropagation to flex_attention `score_mod` biases fails based on presence of graph breaks",
+      "url": "https://github.com/pytorch/pytorch/issues/162228",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "module: correctness (silent)",
+        "oncall: pt2",
+        "module: pt2-dispatcher",
+        "pt2: ubn"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's compilation system. The issue demonstrates that gradients are incorrectly dropped based on the presence/absence of graph breaks, and the behavior changes non-deterministically. The user is using the API correctly - flex_attention should propagate gradients to all inputs. PyTorch maintainers confirmed this is an internal dispatcher/compiler issue that requires code fixes. The workaround (moving torch.compile to wrap flex_attention instead of the outer function) further confirms this is a PyTorch bug, not user error."
+    },
+    {
+      "issue_number": 161905,
+      "title": "[MPS] `torch.compile` ResNet-18 model fails during `loss.backward()` on MPS backend, but works on CPU",
+      "url": "https://github.com/pytorch/pytorch/issues/161905",
+      "state": "closed",
+      "labels": [
+        "triaged",
+        "module: mps",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's MPS backend implementation for torch.compile. The issue specifically occurs during the backward pass of conv2d operations on MPS devices, while the same code works correctly on CPU. A developer mentioned submitting a PR for a fix and provided a workaround involving adjusting conv2d parameters. This requires a PyTorch code change, not a user code change."
+    },
+    {
+      "issue_number": 161904,
+      "title": "ZeroBubble and DualPipeV pipeline parallel schedules fail with torch.compiled model",
+      "url": "https://github.com/pytorch/pytorch/issues/161904",
+      "state": "closed",
+      "labels": [
+        "oncall: distributed",
+        "module: autograd",
+        "triaged",
+        "oncall: pt2",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a legitimate PyTorch limitation/incompatibility between ZeroBubble/DualPipeV pipeline schedules and torch.compile. The issue is not due to incorrect user code but rather an architectural constraint where torch.compile fuses backwards into one function, preventing the schedules from splitting out input and weight gradients as needed. The PyTorch team acknowledges this as a known limitation and discusses adding proper error messages and potentially making these features compatible in the future. While there's a workaround (compiling individual stages instead of the whole model), the underlying issue requires PyTorch code changes to either support the combination or provide clear error messages."
+    },
+    {
+      "issue_number": 161864,
+      "title": "[torch.export][onnx] Error exporting D-FINE to onnx",
+      "url": "https://github.com/pytorch/pytorch/issues/161864",
+      "state": "closed",
+      "labels": [
+        "module: onnx",
+        "onnx-triaged",
+        "oncall: pt2",
+        "oncall: export"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "The issue is resolved by using opset_version >= 18 instead of 16. The user was using an unsupported configuration (opset version < 18 with dynamo=True) in torch 2.8. This is a usage error, not a PyTorch bug. The maintainer's comment confirms this is the expected solution and the issue was closed, indicating no PyTorch code changes were needed."
+    },
+    {
+      "issue_number": 161861,
+      "title": "Compiling chroma in comfyui causes image output to be static on SM_75 but not ampere.",
+      "url": "https://github.com/pytorch/pytorch/issues/161861",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a PyTorch Inductor bug causing incorrect computation (static/noisy output) on SM_75 GPUs but not Ampere. The issue was resolved by setting TORCHINDUCTOR_EMULATE_PRECISION_CASTS=1, indicating a precision handling bug in PyTorch's compiler. The user should not need to set environment variables to get correct results - PyTorch should handle precision correctly out of the box across different GPU architectures."
+    },
+    {
+      "issue_number": 161705,
+      "title": "`aten.slice` adds guard on backed symint which causes inconsistent behavior between eager and trace modes",
+      "url": "https://github.com/pytorch/pytorch/issues/161705",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: dynamic shapes",
+        "oncall: export"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a limitation in PyTorch's export/tracing system, not user error. The issue describes inconsistent behavior between eager mode (which works correctly with flexible dimensions) and traced/exported mode (which adds restrictive guards). A PyTorch maintainer confirms this is a known export issue related to how the compiler handles symbolic expressions for slice operations. The user is using the API correctly; the limitation is in PyTorch's export infrastructure not supporting the min(5, x.size(1)) semantic that eager mode handles naturally. This would require changes to PyTorch's compiler/export system to resolve."
+    },
+    {
+      "issue_number": 161610,
+      "title": "NamedTuple Dynamic Objects do not persist via torch compile and eager backend",
+      "url": "https://github.com/pytorch/pytorch/issues/161610",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triage review",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dynamo/compile functionality. The code demonstrates that dynamic attributes set on NamedTuple objects are lost when using torch.compile, but work correctly in eager mode. This is a behavioral inconsistency in PyTorch that requires a code fix in the compilation/dynamo path. The user is not misusing the API - they expect torch.compile to preserve the same behavior as eager execution, which is a reasonable expectation. The issue is labeled 'module: dynamo' and the reporter mentions they will try to fix it themselves, confirming it's a PyTorch internal bug."
+    },
+    {
+      "issue_number": 161506,
+      "title": "Some transformers `export / compile` tests fails (`Aborted (core dumped)`) with `torch 2.9 nightly` but pass with `torch 2.8`",
+      "url": "https://github.com/pytorch/pytorch/issues/161506",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triage review",
+        "module: crash",
+        "module: regression",
+        "oncall: pt2"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "The issue reporter confirmed in comments that this is not a PyTorch bug. The crash is caused by detectron2 being incompatible with the nightly version of PyTorch, not by any issue in PyTorch itself. No PyTorch code changes are needed - the user needs to either update detectron2 or use a compatible PyTorch version."
+    },
+    {
+      "issue_number": 161281,
+      "title": "There should be an easy way in CI to disable individual failing inductor-periodic tests",
+      "url": "https://github.com/pytorch/pytorch/issues/161281",
+      "state": "open",
+      "labels": [
+        "module: ci",
+        "triaged",
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request for PyTorch's CI infrastructure to add functionality for disabling individual failing inductor-periodic tests. It requires changes to PyTorch's testing infrastructure/tooling, not changes to user code. The discussion involves PyTorch maintainers proposing implementation approaches (using GitHub issues or JSON files to track disabled models)."
+    },
+    {
+      "issue_number": 160546,
+      "title": "vit training reproducibility issue",
+      "url": "https://github.com/pytorch/pytorch/issues/160546",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triaged",
+        "oncall: pt2",
+        "pt2: ubn"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a reproducibility bug in PyTorch that required a code fix (PR #160745) to resolve. The issue was tracked by the PyTorch team, labeled as high priority, and fixed with an internal code change. Not a user error since it required PyTorch code modifications."
+    },
+    {
+      "issue_number": 159958,
+      "title": "torch.compile regression on side-effects between torch 2.7.1 and 2.8 (final RC)",
+      "url": "https://github.com/pytorch/pytorch/issues/159958",
+      "state": "closed",
+      "labels": [
+        "module: regression",
+        "oncall: pt2",
+        "module: dynamo",
+        "oncall: cpu inductor",
+        "pt2: ubn"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a regression in PyTorch 2.8 where previously working code (compiling hooks that use delattr on nn.Module) stopped working. The issue requires a PyTorch code fix (PR #159969 was created), and maintainers confirmed it's a regression that will be fixed in 2.8.1. The user is using a legitimate pattern for temporarily replacing weights that worked in 2.7.1."
+    },
+    {
+      "issue_number": 159886,
+      "title": "torch._dynamo documentation",
+      "url": "https://github.com/pytorch/pytorch/issues/159886",
+      "state": "open",
+      "labels": [
+        "module: docs",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a documentation bug in PyTorch itself. The issue reports that parts of torch._dynamo are undocumented and requests adding proper documentation conformant with PyTorch standards. This requires changes to PyTorch's codebase (adding docstrings), not changes to user code. Documentation bugs in PyTorch are explicitly listed as NOT user errors."
+    },
+    {
+      "issue_number": 159245,
+      "title": "Bug: `torch.compile` triggers C++ compile error due to conflicting declaration in generated `.cpp` code",
+      "url": "https://github.com/pytorch/pytorch/issues/159245",
+      "state": "open",
+      "labels": [
+        "needs reproduction",
+        "oncall: pt2",
+        "oncall: cpu inductor"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a code generation bug in PyTorch's Inductor compiler. The generated C++ code declares the same variable twice with different array sizes (tmp_acc0_arr[16] and tmp_acc0_arr[32]), causing a compilation error. This requires a fix in PyTorch's code generator, not a change in user code. The issue is reproducible by others on PyTorch 2.7.1 but not 2.6.0, indicating a regression in the compiler backend."
+    },
+    {
+      "issue_number": 157330,
+      "title": "[inductor][dynamic shapes] hugging face models fail while creating error guard",
+      "url": "https://github.com/pytorch/pytorch/issues/157330",
+      "state": "closed",
+      "labels": [
+        "high priority",
+        "triaged",
+        "oncall: pt2",
+        "module: dynamic shapes"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's dynamic shapes implementation. The issue involves mark_dynamic causing constraint violations when shapes get specialized during graph compilation. The discussion shows PyTorch developers investigating the root cause, with a PR (#157885) addressing the issue. The specialization happens in PyTorch internals (torch._C._nn.cross_entropy_loss) and requires changes to PyTorch code, not user code. Users are correctly using the --dynamic-shapes flag but PyTorch is incorrectly specializing shapes that were marked as dynamic."
+    },
+    {
+      "issue_number": 156673,
+      "title": "[Onnx] How to do torch-dynamo based onnx exports for SAM-like models with optional inputs?",
+      "url": "https://github.com/pytorch/pytorch/issues/156673",
+      "state": "closed",
+      "labels": [
+        "module: onnx",
+        "oncall: pt2",
+        "oncall: export"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "This is a usage question about how to properly export models with conditional inputs to ONNX using torch.onnx.dynamo_export. The comment provides the solution: use torch.cond with a scalar tensor flag instead of optional inputs for compatibility with ONNX export. No PyTorch code change is needed - the user needs to modify their model architecture to work within the constraints of ONNX export, which doesn't support optional inputs directly."
+    },
+    {
+      "issue_number": 156411,
+      "title": "[compile] torch._dynamo.exc.TorchRuntimeError: Failed running call_function aten.lift_fresh_copy.default",
+      "url": "https://github.com/pytorch/pytorch/issues/156411",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "oncall: export"
+      ],
+      "is_user_error": true,
+      "confidence": "high",
+      "reasoning": "The comment from a maintainer explicitly states that 'Compile/export supports limited number of mutations' and 'optimizer.zero_grad() can not be compiled or exported now.' This is a known limitation of torch.compile/export, not a bug. The user needs to restructure their code to avoid including optimizer operations in the compiled/exported graph, which is the correct usage pattern for these APIs."
+    },
+    {
+      "issue_number": 155421,
+      "title": "Backward fails with compiled attention on nested tensors on RTX6000",
+      "url": "https://github.com/pytorch/pytorch/issues/155421",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: nestedtensor",
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's AOT Autograd system when handling backward pass with compiled attention on nested tensors. The AssertionError in `runtime_wrappers.py` indicates an internal PyTorch compilation/autograd issue where metadata attributes don't match runtime subclass keys. This requires a PyTorch code fix, not a change to user code. The user is following documented APIs correctly (nested tensors, torch.compile, SDPA)."
+    },
+    {
+      "issue_number": 155386,
+      "title": "OpOverloads should have annotations",
+      "url": "https://github.com/pytorch/pytorch/issues/155386",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "module: custom-operators",
+        "module: dispatch",
+        "oncall: pt2",
+        "module: pt2-dispatcher"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a feature request for PyTorch to add `__annotations__` to OpOverload objects. It requires code changes in PyTorch (either codegen or adding a property), not a change to user code. The discussion involves PyTorch maintainers discussing implementation approaches (pybind11 infra, adding property to OpOverload, codegen .pyi files)."
+    },
+    {
+      "issue_number": 155247,
+      "title": "nn.NLLLoss Fails with 1D Inputs in Compiled Mode",
+      "url": "https://github.com/pytorch/pytorch/issues/155247",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2",
+        "module: decompositions",
+        "module: dynamo"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's compilation path. The code works correctly in eager mode but fails with torch.compile due to an incorrect dimension check in the gather operation during compilation. The user is using NLLLoss correctly - the issue is in PyTorch's decomposition/compilation logic that doesn't properly handle 1D inputs that work fine in eager mode. This requires a PyTorch code fix, not a change to user code."
+    },
+    {
+      "issue_number": 155065,
+      "title": "Flex Attention and Nested Tensor: very high VRAM usage",
+      "url": "https://github.com/pytorch/pytorch/issues/155065",
+      "state": "open",
+      "labels": [
+        "triaged",
+        "oncall: pt2"
+      ],
+      "is_user_error": false,
+      "confidence": "high",
+      "reasoning": "This is a bug in PyTorch's flex_attention implementation when used with nested tensors. The user has provided detailed benchmarks showing that flex_attention + nested tensors uses dramatically more VRAM than expected (e.g., 8GB vs 2.7GB for the same workload with SDPA). The user also identified that nested tensors appear to be converted to padded tensors inside _math_attention_inner in flex_attention.py, which defeats the purpose of using nested tensors and causes the memory explosion. This requires a fix in PyTorch's flex_attention code to properly handle nested tensors without converting them to padded tensors."
+    }
+  ]
+}
