@@ -50,7 +50,7 @@ def fetch_issues(label: str, days: int) -> list[dict]:
         "-R", "pytorch/pytorch",
         "--label", label,
         "--state", "all",
-        "--json", "number,title,body,labels,createdAt,state,author",
+        "--json", "number,title,body,labels,createdAt,state,author,assignees",
         "--limit", "100",
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -138,7 +138,9 @@ def collect_results(output_dir: Path, issues: list[dict]) -> list[dict]:
         issue_dir = output_dir / dirname
         result_path = issue_dir / "result.json"
         author = issue.get("author", {}).get("login", "unknown")
-        entry = {"number": num, "title": issue["title"], "dir": dirname, "author": author}
+        assignees = issue.get("assignees", [])
+        assignee = assignees[0].get("login", "") if assignees else ""
+        entry = {"number": num, "title": issue["title"], "dir": dirname, "author": author, "assignee": assignee}
         if result_path.exists():
             try:
                 entry["result"] = json.loads(result_path.read_text())
@@ -185,6 +187,9 @@ def generate_html(results: list[dict], output_dir: Path) -> Path:
         author = escape(r.get("author", "unknown"))
         author_link = f"https://github.com/{author}"
 
+        cc_list = res.get("cc", [])
+        cc_html = ", ".join(f'<a href="https://github.com/{u}">@{u}</a>' for u in cc_list) if cc_list else ""
+
         rows.append(
             f'<tr>'
             f'<td><a href="{link}">#{num}</a></td>'
@@ -192,6 +197,7 @@ def generate_html(results: list[dict], output_dir: Path) -> Path:
             f'<td><a href="{author_link}">@{author}</a></td>'
             f'<td style="background:{color};color:#fff;text-align:center">{cat}</td>'
             f'<td>{summary}</td>'
+            f'<td>{cc_html}</td>'
             f'<td><a href="#detail-{num}">details</a></td>'
             f'</tr>'
         )
@@ -240,7 +246,7 @@ def generate_html(results: list[dict], output_dir: Path) -> Path:
 <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 <p class="summary">{summary_items}</p>
 <table>
-<tr><th>Issue</th><th>Title</th><th>Author</th><th>Category</th><th>Summary</th><th>Details</th></tr>
+<tr><th>Issue</th><th>Title</th><th>Author</th><th>Category</th><th>Summary</th><th>CC</th><th>Details</th></tr>
 {"".join(rows)}
 </table>
 <h2>Details</h2>
@@ -282,6 +288,55 @@ def upload_to_manifold(output_dir: Path, results: list[dict]):
             patch_path = issue_dir / patch_file
             if patch_path.exists():
                 put(patch_path, f"{base_path}/{dirname}/{patch_file}")
+
+
+# ---------------------------------------------------------------------------
+# Step 6: Generate summary and upload to paste
+# ---------------------------------------------------------------------------
+
+def generate_summary_text(results: list[dict], days: int) -> str:
+    """Generate a plain text summary of all issues."""
+    end = datetime.now()
+    start = end - timedelta(days=days)
+    date_range = f"{start.strftime('%Y-%m-%d')} to {end.strftime('%Y-%m-%d')}"
+    lines = [f"PyTorch Export Issues Report ({date_range})", ""]
+    for r in results:
+        num = r["number"]
+        title = r["title"]
+        res = r["result"]
+        cat = res.get("category", "error")
+        status = "closed" if res.get("closed") else "open"
+        url = f"https://github.com/pytorch/pytorch/issues/{num}"
+        assignee = r.get("assignee", "")
+        cc_list = res.get("cc", [])
+        cc_str = ", ".join(f"@{u}" for u in cc_list) if cc_list else ""
+        lines.append(title)
+        lines.append(url)
+        lines.append(f"category: {cat}")
+        lines.append(f"status: {status}")
+        lines.append(f"assigned to: {assignee}")
+        lines.append(f"cc: {cc_str}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def upload_to_paste(summary: str) -> str | None:
+    """Upload summary to paste via pastry. Returns paste URL or None on failure."""
+    try:
+        result = subprocess.run(
+            ["pastry", "-t", "PyTorch Export Issues Report"],
+            input=summary,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        # pastry outputs like "P2201317306: https://..."
+        output = result.stdout.strip()
+        print(f"  Paste: {output}")
+        return output
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"  Failed to upload paste: {e}")
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -360,6 +415,13 @@ def main():
     print("Generating HTML report...")
     html_path = generate_html(results, output_dir)
     print(f"Report: {html_path}")
+
+    print("Uploading summary to paste...")
+    summary = generate_summary_text(results, args.days)
+    summary_path = output_dir / "summary.txt"
+    summary_path.write_text(summary)
+    print(f"Summary: {summary_path}")
+    upload_to_paste(summary)
 
     if args.upload:
         print("Uploading to manifold...")

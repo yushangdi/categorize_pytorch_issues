@@ -46,7 +46,20 @@ Classify into exactly one of these categories:
 
 Provide a helpful answer based on your knowledge of PyTorch export.
 
-## Step 6: Write result.json
+## Step 6: Assign a CC
+
+Based on the issue content and your analysis, determine who should be CC'd. You may CC multiple people if the issue spans multiple components.
+
+- **Dynamic shapes** related: cc @pianpwk
+- **AOT Inductor** related: cc @yushangdi, @desertfire
+- **Decomposition** related: cc @tugsbayasgalan
+- **Pre-compile** related: cc @zhxchen17
+- **ONNX issue that is NOT an export issue**: cc @justinchuby
+- **All other issues**: cc @angelayi
+
+Record the list of CC'd users (GitHub usernames without @) in the `cc` field of result.json.
+
+## Step 7: Write result.json
 
 Get the PyTorch commit hash by running:
 ```bash
@@ -64,7 +77,8 @@ Write the following JSON to `$1/result.json`:
   "repro_output": "stdout/stderr from running repro (truncated to 5000 chars), else null",
   "commit_hash": "torch.version.git_version output",
   "fix_description": "proposed fix description if confirmed_bug, else null",
-  "patch_file": "fix.patch if patch was generated, else null"
+  "patch_file": "fix.patch if patch was generated, else null",
+  "cc": ["list", "of", "github_usernames"]
 }
 ```
 
